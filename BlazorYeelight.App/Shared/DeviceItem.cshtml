@@ -7,7 +7,7 @@
         <div class="card-body">
             <p class="card-text">
                 <div class="d-flex justify-content-center">
-                    <button type="button" onclick="@(() => ToogleOnOff(Device))"
+                    <button type="button" onclick="@(() => ToggleOnOff(Device))"
                             class="mb-3 btn @(DeviceIsOn ? "btn-primary" : "btn-danger")">
                         @(DeviceIsOn ? "On" : "Off")
                     </button>
@@ -67,7 +67,7 @@
     }
 
 
-    public async void ToogleOnOff(Device device)
+    public async void ToggleOnOff(Device device)
     {
         await ReconnectAsync();
         if (device.IsConnected)

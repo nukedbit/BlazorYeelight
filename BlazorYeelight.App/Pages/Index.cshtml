@@ -23,27 +23,17 @@ else
     </div>
 }
 
-
 @functions {
-
 public bool SearchingDevices { get; set; }
 
 public List<Device> Devices { get; set; }
 
-
-
 protected override async Task OnInitAsync()
 {
-    try
-    {
-        SearchingDevices = true;
-        Devices = await DeviceLocator.Discover();
-        SearchingDevices = false;
-        StateHasChanged();
-    }
-    catch (Exception ex)
-    {
 
-    }
+    SearchingDevices = true;
+    Devices = await DeviceLocator.Discover();
+    SearchingDevices = false;
+    StateHasChanged();
 }
 }
