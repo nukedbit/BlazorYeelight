@@ -1,0 +1,78 @@
+﻿@using  YeelightAPI;
+
+
+    <div class="card mr-3" style="width: 18rem;">
+        
+        <img class="card-img-top mt-2"  src="/images/yeelight-@(Device.Model.ToString().ToLower()).png" width="200" height="200" alt="@Name">
+        <div class="card-body">
+            <p class="card-text">
+                <div class="d-flex justify-content-center">
+                    <button type="button" onclick="@(() => ToogleOnOff(Device))"
+                            class="mb-3 btn @(DeviceIsOn ? "btn-primary" : "btn-danger")">
+                        @(DeviceIsOn ? "On" : "Off")
+                    </button>
+                </div>
+
+                <div class="input-group mb-3">
+
+                    <input type="text" class="form-control" placeholder="Device Name" bind="@Name" />
+                    <div class="input-group-append">
+                        <button class="btn btn-info" type="button" onclick="@(()=> Rename())" disabled="@(string.IsNullOrEmpty(Name) || Name.Length < 2)">Rename</button>
+                    </div>
+                </div>
+            </p>
+        </div>
+    </div>
+
+@functions {
+    [Parameter]
+    Device Device { get; set; }
+    bool  DeviceIsOn { get; set; }
+    string Name { get; set; }
+
+    private async void Rename()
+    {
+        await ReconnectAsync();
+        if (Name.Length > 2)
+        {
+            var x = await Device.SetName(Name);
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await CheckDevicePowerStatus();
+        Name = (string)await Device.GetProp(YeelightAPI.Models.PROPERTIES.name);
+    }
+
+
+
+    private async Task ReconnectAsync()
+    {
+        if (!Device.IsConnected)
+            await Device.Connect();
+    }
+
+    private async Task CheckDevicePowerStatus()
+    {
+
+        await ReconnectAsync();
+
+
+        if (Device.IsConnected)
+        {
+            var power = await Device.GetProp(YeelightAPI.Models.PROPERTIES.power);
+            DeviceIsOn = power.ToString() == "off" ? false : true;
+        }
+    }
+
+
+    public async void ToogleOnOff(Device device)
+    {
+        await ReconnectAsync();
+        if (device.IsConnected)
+            await device.Toggle();
+        await CheckDevicePowerStatus();
+        StateHasChanged();
+    }
+}

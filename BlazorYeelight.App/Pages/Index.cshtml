@@ -1,0 +1,49 @@
+﻿@page "/"
+@using YeelightAPI;
+
+<style>
+    .cards {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+</style>
+
+@if (SearchingDevices)
+{
+    <b>Searching devices...</b>
+}
+else
+{<div class="cards">
+
+        @foreach (var device in Devices)
+        {
+            <DeviceItem Device="@device"></DeviceItem>
+        }
+    </div>
+}
+
+
+@functions {
+
+public bool SearchingDevices { get; set; }
+
+public List<Device> Devices { get; set; }
+
+
+
+protected override async Task OnInitAsync()
+{
+    try
+    {
+        SearchingDevices = true;
+        Devices = await DeviceLocator.Discover();
+        SearchingDevices = false;
+        StateHasChanged();
+    }
+    catch (Exception ex)
+    {
+
+    }
+}
+}
